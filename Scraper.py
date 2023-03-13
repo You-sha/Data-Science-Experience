@@ -16,9 +16,9 @@ warnings.simplefilter(action='ignore',category=DeprecationWarning)
 pages = int(input('Enter number of pages to scrape: '))
 page = 0
 df = pd.DataFrame(columns=['title','company','ratings','reviews','experience',
-                           'salary','location','days_posted','url'])
+                           'salary','location','days_posted','tags','url'])
 
-for i in range(1,pages):
+for i in range(1,pages+1):
     if i == 1:
         url = "https://www.naukri.com/data-scientist-jobs-?k=data%20scientist&nignbevent_src=jobsearchDeskGNB"
     else:
@@ -88,11 +88,17 @@ for i in range(1,pages):
         hist = job_elem.find('div', class_='jobTupleFooter mt-8')
         hist2 = hist.find('div', class_='tupleTagsContainer')
         hist3 = hist2.find('span', class_='fleft postedDate')
+        
+        # job Tags
+        tags = job_elem.find('ul',class_='tags has-description')
+        tag1 = ""
+        for tag in tags:
+            tag1 += " "+tag.text
 
         # Adding data to dataframe
         df = df.append({'title':title.text,'company':company.text,'ratings':ratings,
                 'reviews':reviews,'experience':Experience,'salary':Salary,
-                'location':Location,'days_posted':hist3.text,'url':url}, 
+                'location':Location,'days_posted':hist3.text,'tags':tag1,'url':url}, 
                  ignore_index=True)
     
     page += 1
