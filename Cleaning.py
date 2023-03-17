@@ -26,18 +26,6 @@ df.location.value_counts()[:20]
 
 df.drop('url',axis=1,inplace=True)
 
-#location
-def location(loc):
-     locs = ['bangalore', 'hyderabad', 'gurgaon','pune', 'mumbai', 
-             'chennai', 'noida','remote','delhi']
-     for i in locs:
-         if i in loc.lower():
-             return i
-         else:
-             return 'other'
-    
-df['loc_simp'] = df.location.apply(location)
-
 # job simplify
 def title_simp(title):
     if 'data scientist' in title.lower() or 'datascientist' in title.lower():
@@ -88,8 +76,13 @@ df['days_posted_int'] = df.days_posted.apply(lambda x: x.split()[0].replace('+',
                                              .replace('Just','0').strip())
 df.days_posted_int = df.days_posted_int.astype('int')
 
-# skills
+#location
+locations = ['bangalore','delhi','kolkata','mumbai','remote','gurgaon','hyderabad',
+             'noida','pune']
+for i in locations:
+    df[i] = df.location.apply(lambda x: 1 if i in x.lower() else 0)
 
+# skills
 df['python'] = df.tags.apply(lambda x: 1 if 'python' in x.lower() else 0)
 df.python.value_counts()
 

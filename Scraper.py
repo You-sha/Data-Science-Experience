@@ -20,8 +20,10 @@ df = pd.DataFrame(columns=['title','company','ratings','reviews','experience',
 
 for i in range(1,pages+1):
     if i == 1:
+        # insert link to page 1 here
         url = "https://www.naukri.com/data-scientist-jobs-?k=data%20scientist&nignbevent_src=jobsearchDeskGNB"
     else:
+        # insert link to 2nd page here, replace number 2 with str(i)
         url = "https://www.naukri.com/data-scientist-jobs-"+str(i)+"?k=data%20scientist&nignbevent_src=jobsearchDeskGNB"
     driver = webdriver.Chrome("C:\\Users\\Shumail\\anaconda3\\Lib\\site-packages\\chromedriver_binary\\chromedriver.exe")
     driver.get(url)
@@ -108,7 +110,7 @@ df.duplicated().sum()
 
 df2 = df.drop_duplicates()
 
-df2.to_csv('naukri_scraped_data.csv', index=None)
+#df2.to_csv('naukri_scraped_data.csv', index=None)
     
     
     
