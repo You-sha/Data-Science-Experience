@@ -110,7 +110,7 @@ df.duplicated().sum()
 
 df2 = df.drop_duplicates()
 
-#df2.to_csv('naukri_scraped_data.csv', index=None)
+df2.to_csv('data/naukri_scraped_data.csv', index=None)
     
     
     

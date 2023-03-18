@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 pd.set_option('display.max_columns',10)
 pd.set_option('display.width', 1000)
 
-df = pd.read_csv('naukri_scraped_data.csv')
+df = pd.read_csv('data/naukri_scraped_data.csv')
 df.head()
 
 df.info()
