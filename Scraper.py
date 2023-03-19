@@ -4,7 +4,6 @@ Created on Sat Mar 11 14:51:02 2023
 
 @author: Yousha
 """
-import requests
 import pandas as pd
 import time
 from bs4 import BeautifulSoup

@@ -6,8 +6,6 @@ Created on Mon Mar 13 23:31:54 2023
 """
 
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 
 pd.set_option('display.max_columns',10)
 pd.set_option('display.width', 1000)
