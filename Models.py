@@ -58,64 +58,90 @@ y = df.avg_experience.values
 # Models
 
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import cross_val_score
 scaler = StandardScaler()
 
 X_trans = scaler.fit_transform(X)
 
-
-# Linear Regression
-from sklearn.linear_model import LinearRegression
-lr = LinearRegression()
-lr2 = LinearRegression()
-
-lr.fit(X,y)
-y_pred = lr.predict(X)
-
-lr2.fit(X_trans,y)
-y_pred2 = lr2.predict(X_trans)
-
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import r2_score
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_percentage_error
-
-print(mean_absolute_error(y, y_pred))   # 1.86
-print(mean_absolute_error(y, y_pred2))  # 1.86
-print(r2_score(y,y_pred))               # 0.27
-
-
-# train test split for ensemble
+# train test split
 from sklearn.model_selection import train_test_split
-X_train,X_test,y_train,y_test = train_test_split(X_trans,y,test_size=.2,random_state=1)
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=.2,random_state=1) 
 
+# statsmodel LR
+import statsmodels.api as sm
+
+X_sm = X = sm.add_constant(X)
+model = sm.OLS(y,X_sm)
+model.fit().summary()
+
+
+# sklearn LR
+from sklearn.linear_model import LinearRegression, Lasso
+lr = LinearRegression()
+
+np.mean(cross_val_score(lr, X_train, y_train, scoring='neg_mean_absolute_error',cv=3)) # -2.37
+lr.fit(X_train,y_train)
+y_pred = lr.predict(X_test)
+pred_real = np.concatenate([y_pred.reshape(-1,1),y_test.reshape(-1,1)],axis=1)
+residuals = y_test - y_pred
+
+plt.scatter(np.linspace(0,residuals.max(),105), residuals,c=residuals,cmap='magma', edgecolors='black', linewidths=.1)
+plt.colorbar(label="Quality", orientation="vertical")
+# plot a horizontal line at y = 0
+plt.hlines(y = 0,
+xmin = 0, xmax=12.08,
+linestyle='--',colors='black')
+# set xlim
+plt.xlim((0, 12.08))
+plt.show()
+
+
+# Lasso
+lm = Lasso()
+
+np.mean(cross_val_score(lm, X_train, y_train, scoring='neg_mean_absolute_error',cv=3)) # -2.22
+
+alpha = []
+error = []
+
+for i in range(1,100):
+    lml = Lasso(alpha=i/100)
+    alpha.append(i/100)
+    x = np.mean(cross_val_score(lml, X_train, y_train, scoring='neg_mean_absolute_error',cv=3))
+    error.append(x)
+
+plt.plot(alpha,error)
+alph_err = tuple(zip(alpha,error))
+err_df = pd.DataFrame(alph_err, columns=['Alpha','Error'])
+
+best_lm = err_df.query('Error == Error.max()')
 
 # Random forest
 from sklearn.ensemble import RandomForestRegressor
-rf = RandomForestRegressor(random_state=1)
+rf = RandomForestRegressor()
+
+np.mean(cross_val_score(rf, X_train, y_train, scoring='neg_mean_absolute_error',cv=3)) # -2.21
 
 rf.fit(X_train,y_train)  #performs better on unscaled data
 y_pred_rf = rf.predict(X_test)
 
-print("rf mae",mean_absolute_error(y_test, y_pred_rf))              # 1.97
-print("rf mse",mean_squared_error(y_test,y_pred_rf))                # 7.05
-print("rf mae",mean_absolute_percentage_error(y_test,y_pred_rf))    # 0.54
-print("rf r2",r2_score(y_test,y_pred_rf))                           # 0.11
-print('variance y:',np.var(y))                                      # 8.34
-print('variance test set:',np.var(y_test))                          # 7.95
-
-#plot confusion matrix
+# GridSearch
+from sklearn.model_selection import GridSearchCV
+params = {'n_estimators': range(100,1000,100),
+          'criterion':('squared_error', 'absolute_error'),
+          'max_features':('auto','sqrt','log2')}
+gs = GridSearchCV(rf, param_grid=params,scoring='neg_mean_absolute_error', cv=3)
+gs.fit(X_train,y_train)
+gs.best_score_
+gs.best_params_
 
 
 # Tried using a neural netwrok ... I have no clue how to make this work at the moment.
 from sklearn.neural_network import MLPRegressor
 mlp = MLPRegressor(hidden_layer_sizes=(100,50), activation='relu', solver='adam', alpha=0.001,max_iter=10000,random_state=1) 
 
-mlp.fit(X_train,y_train)
-y_pred_mlp = mlp.predict(X_test)
+np.mean(cross_val_score(mlp, X_train, y_train, scoring='neg_mean_absolute_error',cv=3))
 
-print("mlp mae",mean_absolute_error(y_test, y_pred_mlp)) # 2.51
-print("mlp r2",r2_score(y_test,y_pred_mlp))              # -0.33
-print('variance y:',np.var(y))
 
 
 
