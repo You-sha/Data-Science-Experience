@@ -57,11 +57,7 @@ y = df.avg_experience.values
 
 # Models
 
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score
-scaler = StandardScaler()
-
-X_trans = scaler.fit_transform(X)
 
 # train test split
 from sklearn.model_selection import train_test_split
@@ -116,6 +112,22 @@ err_df = pd.DataFrame(alph_err, columns=['Alpha','Error'])
 
 best_lm = err_df.query('Error == Error.max()')
 
+lm = Lasso(alpha=0.09)
+lm.fit(X_train,y_train)
+y_pred_lm = lm.predict(X_test)
+
+residuals_lm = y_test - y_pred_lm
+
+plt.scatter(np.linspace(0,residuals_lm.max(),105), residuals_lm,c=residuals_lm,cmap='magma', edgecolors='black', linewidths=.1)
+plt.colorbar(label="Error", orientation="vertical")
+# plot a horizontal line at y = 0
+plt.hlines(y = 0,
+xmin = 0, xmax=residuals_lm.max(),
+linestyle='--',colors='black')
+# set xlim
+plt.xlim((0, residuals_lm.max()))
+plt.show()
+
 # Random forest
 from sklearn.ensemble import RandomForestRegressor
 rf = RandomForestRegressor()
@@ -135,17 +147,21 @@ gs.fit(X_train,y_train)
 gs.best_score_
 gs.best_params_
 
+# Pickling
+lm2 = Lasso(alpha=0.09)
+lm2.fit(X,y)
 
-# Tried using a neural netwrok ... I have no clue how to make this work at the moment.
-from sklearn.neural_network import MLPRegressor
-mlp = MLPRegressor(hidden_layer_sizes=(100,50), activation='relu', solver='adam', alpha=0.001,max_iter=10000,random_state=1) 
+import pickle
+pickl = {'model':lm2}
+pickle.dump(pickl, open('model_file'+'.p','wb'))
 
-np.mean(cross_val_score(mlp, X_train, y_train, scoring='neg_mean_absolute_error',cv=3))
+with open('model_file.p', 'rb') as pickled:
+    data = pickle.load(pickled)
+    model = data['model']
 
+model.predict(X_test.iloc[1,:].values.reshape(1,-1))
 
-
-
-
+list(X_test.iloc[1,:])
 
 
 
