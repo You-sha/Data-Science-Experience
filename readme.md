@@ -1,3 +1,3 @@
-# Naukri.com Data Science jobs EDA
+# Data Science Experience: Project Overview
 
 *(In progress)*
