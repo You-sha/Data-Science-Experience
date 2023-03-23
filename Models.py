@@ -110,7 +110,7 @@ plt.plot(alpha,error)
 alph_err = tuple(zip(alpha,error))
 err_df = pd.DataFrame(alph_err, columns=['Alpha','Error'])
 
-best_lm = err_df.query('Error == Error.max()')
+best_lm = err_df.query('Error == Error.max()') #-2.14
 
 lm = Lasso(alpha=0.09)
 lm.fit(X_train,y_train)
