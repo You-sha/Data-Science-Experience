@@ -80,6 +80,10 @@ Lasso Regression performed the best on this data.
 * **Random Forest Regressor MAE:** 2.21
 * **Multivariate Linear Regression MAE:** 2.37
 
+### Lasso Regression Residuals:
+
+<img src="https://user-images.githubusercontent.com/123200960/227577096-f124cd58-d50e-4b35-8efa-1a6a1c3402d4.png" width="600" height="450">
+
 ## Productionization
 
 I built a flask API endpoint that was hosted on a local server by following the tutorial provided in the reference. The API endpoint takes in a request with a list of values from a job listing and returns an estimated value for average experience.
