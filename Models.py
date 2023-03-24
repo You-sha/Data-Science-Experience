@@ -119,13 +119,16 @@ y_pred_lm = lm.predict(X_test)
 residuals_lm = y_test - y_pred_lm
 
 plt.scatter(np.linspace(0,residuals_lm.max(),105), residuals_lm,c=residuals_lm,cmap='magma', edgecolors='black', linewidths=.1)
-plt.colorbar(label="Error", orientation="vertical")
+plt.colorbar(orientation="vertical")
+plt.ylabel('Residuals')
+plt.title('Lasso Regression',pad=15)
 # plot a horizontal line at y = 0
 plt.hlines(y = 0,
 xmin = 0, xmax=residuals_lm.max(),
 linestyle='--',colors='black')
 # set xlim
 plt.xlim((0, residuals_lm.max()))
+plt.savefig('plots/Residuals.png',dpi=600,bbox_inches='tight')
 plt.show()
 
 # Random forest
